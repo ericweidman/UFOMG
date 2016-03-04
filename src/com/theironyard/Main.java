@@ -29,10 +29,20 @@ public class Main {
                     String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
                     String userPass = request.queryParams("userPass");
                     insertUser(conn, userName, userPass);
+                    response.redirect("/");
                     return userName;
                 }
         );
+        Spark.post(
+                "/delete-sighting",
+                (request, response) -> {
+                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
+                    deleteSighting(conn, deleteById);
+                    response.redirect("/");
+                    return "";
 
+                }
+        );
         Spark.post(
                 "/create-sighting",
                 (request, response) -> {
@@ -42,6 +52,7 @@ public class Main {
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
                     insertSighting(conn, lat, lon, text, timestamp, url);
+                    response.redirect("/");
                     return "Success!";
                 }
         );
