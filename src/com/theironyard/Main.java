@@ -19,50 +19,35 @@ public class Main {
                 "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
-                    Session session = request.session();
-                    String userName = session.attribute("userName");
-                    User user = selectUser(conn, userName);
                     ArrayList<Sighting> allSightings = selectSightings(conn);
                     return serializer.serialize(allSightings);
-                })
-        );
+                    //this needs an is else statement, if empty string is passed pass everything
+                    //else if id number is passed, pass that sighting back.
 
-        Spark.post(
-                "/login",
-                ((request, response) ->  {
-                    String userName = request.queryParams("userName");
-                    String userPass = request.queryParams("userPass");
-                    if (userName == null) {
-                        throw new Exception("Login name not found");
-                    }
-                    User user = selectUser(conn, userName);
-                    if ( user == null) {
-                        insertUser(conn, userName, userPass);
-                    }
-
-                    Session session = request.session();
-                    session.attribute("userName", userName);
-                    return "";
                 })
         );
 
         Spark.post(
                 "/create-user",
                 (request, response) -> {
+                    // being passed json object with username, password
+                    //needs to be parsed, if it exists send error.
                     String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
                     String userPass = request.queryParams("userPass");
                     insertUser(conn, userName, userPass);
                     return userName;
+                    //if empty request is sent return all users.
+                    //if json object with username/password is received
+                    //check exists, error
+
                 }
         );
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
-                    //ADD THIS? Session session = request.session
-                    //  String name = session.attribute("userName");
-                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
+                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));)
                     deleteSighting(conn, deleteById);
-                    return "";
+                    return "Success!";
                 }
         );
         Spark.post(
@@ -80,6 +65,8 @@ public class Main {
         Spark.post(
                 "/update-sighting",
                 (request, response) -> {
+
+                    //being passed object, with id, and all the new stuff.
                     String lat = request.queryParams("lat");
                     String lon = request.queryParams("lon");
                     String text = request.queryParams("text");
@@ -87,6 +74,7 @@ public class Main {
                     String url = request.queryParams("url");
                     updateSighting(conn, lat, lon, text, timestamp, url);
                     return "";
+                    //if sucesss return , else error.
 
                 }
         );
@@ -106,11 +94,9 @@ public class Main {
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
-        // Some of this may change.
         stmt.execute("CREATE TABLE IF NOT EXISTS sightings (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," + //WHY IS THERE A + HERE?
                 "url VARCHAR, user_id INT)");
-        // We may need to add additional information here
-        // so that we can INNER JOIN them. I need some clarification on this. NOTHING ELSE NEEDED HERE
+
     }
 
     public static void insertUser(Connection conn, String userName, String userPass) throws SQLException {
@@ -118,8 +104,8 @@ public class Main {
         stmt.setString(1, userName);
         stmt.setString(2, userPass);
         stmt.execute();
-        // This should cover it. Maybe? YEP
     }
+
 
     public static User selectUser(Connection conn, String userName) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE user_name = ?");
@@ -131,8 +117,6 @@ public class Main {
             return new User(id, userName, password);
         }
         return null;
-
-        // I think this method will work for what we need. AGREED
     }
 
     public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
@@ -158,8 +142,7 @@ public class Main {
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
         stmt.execute();
-
-        //I think this is good too.
+.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
@@ -176,8 +159,6 @@ public class Main {
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
-
-            // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
     }
@@ -213,18 +194,7 @@ public class Main {
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
-
     }
 
-    static User getUserFromSession(Connection conn, Session session) throws SQLException {
-        String name = session.attribute("UserName");
-        return selectUser(conn, name);
-    }
-    //  Our naming conventions for posts.
-    //  "/create-"
-    //  "/read-"
-    //  "/update-"
-    //  "/delete-"
-    //
 }
 
