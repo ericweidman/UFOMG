@@ -142,17 +142,9 @@ public class Main {
         stmt.setInt(6, id);
 
     }
-
-
-    //We will need to create methods to update and delete sightings, and maybe users?
-
-    //These are the SQL commands for updating and deleting.
-    //stmt.execute("UPDATE players SET health = 10.0 WHERE name = 'Bob'");
-    //stmt.execute("DELETE FROM players WHERE name = 'Bob'");
-
-    //GameTracker has an example method for deleting.
-    //  "/create"
-    //  "/read"
+    //  Our naming conventions for posts.
+    //  "/create-"
+    //  "/read-"
     //  "/update-"
     //  "/delete-"
     //
