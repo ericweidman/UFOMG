@@ -10,6 +10,14 @@ public class Sighting {
     String timestamp;
     String url;
 
+    public Sighting(int id, String location, String text, String timestamp, String url) {
+        this.id = id;
+        this.location = location;
+        this.text = text;
+        this.timestamp = timestamp;
+        this.url = url;
+    }
+
     public int getId() {
         return id;
     }

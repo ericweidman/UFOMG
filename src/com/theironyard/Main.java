@@ -91,7 +91,7 @@ public class Main {
         }
         return null;
 
-        // I think this method will work find for what we need.
+        // I think this method will work for what we need.
     }
 
     public static void insertSighting(Connection conn, int userId, String location, String text, String timestamp, String url) throws SQLException {
@@ -103,7 +103,30 @@ public class Main {
         stmt.setString(5, url);
         stmt.execute();
 
-
+        //I think this is good too.
     }
+    public static Sighting selectSighting(Connection conn, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN user ON" +
+                "sighting.user_id = user.id WHERE sighting.id = ?)");
+        stmt.setInt(1, id);
+        ResultSet results = stmt.executeQuery();
+        if (results.next()) {
+            String location = results.getString("sighting.location");
+            String text = results.getString("text");
+            String timestamp = results.getString("timestamp");
+            String url = results.getString("url");
+            return new Sighting(id, location, text, timestamp, url);
+
+            // I think? This whole thing could be entirely broken. Let me know what you think.
+        }
+        return null;
+    }
+    //We will need to create methods to update and delete sightings, and maybe users?
+
+    //These are the SQL commands for updating and deleting.
+    //stmt.execute("UPDATE players SET health = 10.0 WHERE name = 'Bob'");
+    //stmt.execute("DELETE FROM players WHERE name = 'Bob'");
+
+    //GameTracker has an example method for deleting.
 }
 
