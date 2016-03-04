@@ -18,31 +18,21 @@ public class Main {
         Connection conn = DriverManager.getConnection("jdbc:h2:./main");
         createTables(conn);
 
-
+        Spark.externalStaticFileLocation("public");
         Spark.init();
         Spark.get(
                 "/index",
-                (request, response) -> {
-//                    JsonSerializer serializer = new JsonSerializer();
-//                    //Insert some kind of code here.
-//                    return serializer.serialize("INSERT SOMETHING HERE!");
+                ((request, response) -> {
+                    JsonSerializer serializer = new JsonSerializer();
                     Session session = request.session();
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
 
-                    HashMap m = new HashMap();
-                    m.put("userName", userName);
                     ArrayList<Sighting> allSightings = selectSightings(conn);
-                    m.put("allSightings", allSightings);
 
-                    if (user != null) {
-                        m.put("sightings", user.sightings);
-                    }
-                    return new ModelAndView(m, index.html);
-                }),
-                new MustacheTemplateEngine();
-
-    );
+                    return serializer.serialize(allSightings);
+                })
+        );
 
         Spark.post(
                 "/login",
@@ -59,7 +49,6 @@ public class Main {
 
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    response.redirect("/index");
                     return "";
                 })
         );
@@ -70,7 +59,6 @@ public class Main {
                     String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
                     String userPass = request.queryParams("userPass");
                     insertUser(conn, userName, userPass);
-                    response.redirect("/");
                     return userName;
                 }
         );
@@ -81,7 +69,6 @@ public class Main {
                     //  String name = session.attribute("userName");
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
-                    response.redirect("/");
                     return "";
                 }
         );
@@ -94,22 +81,18 @@ public class Main {
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
                     insertSighting(conn, lat, lon, text, timestamp, url);
-                    response.redirect("/");
                     return "Success!";
                 }
         );
         Spark.post(
                 "/update-sighting",
                 (request, response) -> {
-
-
                     String lat = request.queryParams("lat");
                     String lon = request.queryParams("lon");
                     String text = request.queryParams("text");
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
                     updateSighting(conn, lat, lon, text, timestamp, url);
-                    response.redirect("/");
                     return "";
 
                 }
@@ -119,7 +102,6 @@ public class Main {
                 (request, response) -> {
                     Session session = request.session();
                     session.invalidate();
-                    response.redirect("/");
                     return "";
                 }
         );
@@ -139,7 +121,7 @@ public class Main {
     }
 
     public static void insertUser(Connection conn, String userName, String userPass) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO user VALUES (NULL, ?, ?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (NULL, ?, ?)");
         stmt.setString(1, userName);
         stmt.setString(2, userPass);
         stmt.execute();
@@ -147,7 +129,7 @@ public class Main {
     }
 
     public static User selectUser(Connection conn, String userName) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE user_name = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE user_name = ?");
         stmt.setString(1, userName);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
@@ -187,7 +169,6 @@ public class Main {
         //I think this is good too.
     }
 
-
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN users ON" +
                 "sightings.user_id = users.id WHERE sightings.id = ?)");
@@ -219,7 +200,7 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            //String name = results.getString("users.name");
+            String name = results.getString("users.name");
             Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
             sightings.add(sighting);
         }
@@ -232,21 +213,19 @@ public class Main {
         stmt.execute();
     }
 
-    static void updateSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
+    static void updateSighting(Connection conn,  String lat, String lon, String text, String timestamp, String url) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
-        stmt.setInt(6, id);
 
     }
 
-
-    static User getUserFromSession(Connection conn, Session session) {
+    static User getUserFromSession(Connection conn, Session session) throws SQLException {
         String name = session.attribute("UserName");
-        return selectUser(conn, userName);
+        return selectUser(conn, name);
     }
     //  Our naming conventions for posts.
     //  "/create-"
