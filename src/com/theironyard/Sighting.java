@@ -5,17 +5,21 @@ package com.theironyard;
  */
 public class Sighting {
     int id;
-    String location;
+    String lat;
+    String lon;
     String text;
     String timestamp;
     String url;
 
-    public Sighting(int id, String location, String text, String timestamp, String url) {
+
+    public Sighting(int id, String lat, String lon, String text, String timestamp, String url) {
         this.id = id;
-        this.location = location;
+        this.lat = lat;
+        this.lon = lon;
         this.text = text;
         this.timestamp = timestamp;
         this.url = url;
+
     }
 
     public int getId() {
@@ -26,12 +30,21 @@ public class Sighting {
         this.id = id;
     }
 
-    public String getLocation() {
-        return location;
+    public String getLat() {
+        return lat;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setLat(String lat) {
+        this.lat = lat;
+    }
+
+    public void getLon(String lon){
+        this.lon = lon;
+    }
+
+    public void setLon(String lon){
+        this.lon = lon;
+
     }
 
     public String getText() {

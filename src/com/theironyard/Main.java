@@ -10,11 +10,12 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         Connection conn = DriverManager.getConnection("jdbc:h2:./main");
+        createTables(conn);
 
 
         Spark.init();
         Spark.get(
-                "/", //  This will be renamed to /index?
+                "/index",
                 (request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
                     //Insert some kind of code here.
@@ -23,33 +24,47 @@ public class Main {
         );
 
         Spark.post(
-                "/", //  This will likely be where we create users. Will rename to something like "/create-user"
+                "/create-user",
                 (request, response) -> {
-                    String userName = request.queryParams("rename"); //We need to figure out these call names as a group.
-                    String userPass = request.queryParams("renameThisToo");
-
-                    //Insert code here, probably with a method.
-
-                    return "";
+                    String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
+                    String userPass = request.queryParams("userPass");
+                    insertUser(conn, userName, userPass);
+                    response.redirect("/");
+                    return userName;
                 }
         );
-
         Spark.post(
-                "/", //  Create sighting.
+                "/delete-sighting",
                 (request, response) -> {
-                    String location = request.queryParams("rename");
-                    String text = request.queryParams("rename");
-                    String timestamp = request.queryParams("rename"); //Date and time?
-                    String url = request.queryParams("rename");
-                    //We may need additional information.
-
-                    //Insert code here, also probably with a method.
-
+                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
+                    deleteSighting(conn, deleteById);
+                    response.redirect("/");
                     return "";
                 }
         );
         Spark.post(
-                "/", //  Logout. I'm not sure how much of this post route we'll need to change.
+                "/create-sighting",
+                (request, response) -> {
+                    String lat = request.queryParams("lat");
+                    String lon = request.queryParams("lon");
+                    String text = request.queryParams("text");
+                    String timestamp = request.queryParams("timestamp");
+                    String url = request.queryParams("url");
+                    insertSighting(conn, lat, lon, text, timestamp, url);
+                    response.redirect("/");
+                    return "Success!";
+                }
+        );
+        Spark.post(
+                "/update-sighting",
+                (request, response) -> {
+
+                    response.redirect("/");
+                    return "";
+                }
+        );
+        Spark.post(
+                "/logout", //  Logout. I'm not sure how much of this post route we'll need to change.
                 (request, response) -> {
                     Session session = request.session();
                     session.invalidate();
@@ -66,7 +81,7 @@ public class Main {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS user (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
         // Some of this may change.
-        stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, location VARCHAR, text VARCHAR, timestamp VARCHAR," +
+        stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," +
                 "url VARCHAR, user_id INT)");
         // We may need to add additional information here
         // so that we can INNER JOIN them. I need some clarification on this.
@@ -94,39 +109,58 @@ public class Main {
         // I think this method will work for what we need.
     }
 
-    public static void insertSighting(Connection conn, int userId, String location, String text, String timestamp, String url) throws SQLException {
+    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO sighting VALUES (NULL, ?, ?, ?, ?, ?)");
-        stmt.setInt(1, userId);
-        stmt.setString(2, location);
-        stmt.setString(3, text);
-        stmt.setString(4, timestamp);
-        stmt.setString(5, url);
+        stmt.setString(2, lat);
+        stmt.setString(3, lon);
+        stmt.setString(4, text);
+        stmt.setString(5, timestamp);
+        stmt.setString(6, url);
         stmt.execute();
 
         //I think this is good too.
     }
+
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN user ON" +
                 "sighting.user_id = user.id WHERE sighting.id = ?)");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
-            String location = results.getString("sighting.location");
+            String lat = results.getString("sighting.lat");
+            String lon = results.getString("sighting.lon");
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            return new Sighting(id, location, text, timestamp, url);
+            //int userId = results.getInt("user_id");
+            return new Sighting(id, lat, lon, text, timestamp, url);
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
     }
-    //We will need to create methods to update and delete sightings, and maybe users?
 
-    //These are the SQL commands for updating and deleting.
-    //stmt.execute("UPDATE players SET health = 10.0 WHERE name = 'Bob'");
-    //stmt.execute("DELETE FROM players WHERE name = 'Bob'");
+    static void deleteSighting(Connection conn, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM WHERE id = ?)");
+        stmt.setInt(1, id);
+        stmt.execute();
+    }
 
-    //GameTracker has an example method for deleting.
+    static void editSighting(Connection conn, int id, String lat, String lon, String text, String timestamp, String url) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?)");
+        stmt.setString(1, lat);
+        stmt.setString(2, lon);
+        stmt.setString(3, text);
+        stmt.setString(4, timestamp);
+        stmt.setString(5, url);
+        stmt.setInt(6, id);
+
+    }
+    //  Our naming conventions for posts.
+    //  "/create-"
+    //  "/read-"
+    //  "/update-"
+    //  "/delete-"
+    //
 }
 
