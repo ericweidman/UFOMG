@@ -1,7 +1,8 @@
 /*@font-face {
   font-family: "TheyAreRealAliens";
-  src: url(FalturalAlien.ttf);
-  font-weight: bold;
+  src: url("FalturaAlien.ttf");
+
+
 }*/
 * {
   margin: 0; }
@@ -12,15 +13,18 @@ body {
   background-repeat: no-repeat; }
 
 h1 {
-  color: #BA345C;
+  color: white;
   text-align: center;
-  font-family: 'Six Caps', sans-serif;
-  font-size: 50px;
-  letter-spacing: 5px; }
+  font-family: 'Quantico', sans-serif;
+  font-size: 80px;
+  letter-spacing: 5px;
+  margin-bottom: 5px; }
 
 h4 {
-  color: #BA345C;
-  text-align: center; }
+  color: white;
+  text-align: center;
+  font-size: 17px;
+  font-weight: lighter; }
 
 .login {
   margin: 0 auto;
