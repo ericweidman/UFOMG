@@ -1,0 +1,41 @@
+/*@font-face {
+  font-family: "TheyAreRealAliens";
+  src: url(FalturalAlien.ttf);
+  font-weight: bold;
+}*/
+* {
+  margin: 0; }
+
+body {
+  width: 100%;
+  background-image: url("images/StarryNight2.jpg");
+  background-repeat: no-repeat; }
+
+h1 {
+  color: #BA345C;
+  text-align: center;
+  font-family: 'Six Caps', sans-serif;
+  font-size: 50px;
+  letter-spacing: 5px; }
+
+h4 {
+  color: #BA345C;
+  text-align: center; }
+
+.login {
+  margin: 0 auto;
+  width: 40%;
+  background-color: #a391a2;
+  padding: 39px;
+  margin-top: 60px;
+  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6); }
+
+.username input, .password input {
+  width: 60%;
+  height: 29px;
+  margin: 10px 90px;
+  text-align: center; }
+
+.submit button, .add-new button {
+  width: 30%;
+  display: inline-block; }
