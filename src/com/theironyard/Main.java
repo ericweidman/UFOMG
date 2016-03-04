@@ -29,23 +29,20 @@ public class Main {
                     String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
                     String userPass = request.queryParams("userPass");
                     insertUser(conn, userName, userPass);
-                    return "Success!";
+                    return userName;
                 }
         );
 
         Spark.post(
                 "/create-sighting",
                 (request, response) -> {
-                    String lat = request.queryParams("rename");
-                    String lon = request.queryParams("rename");
-                    String text = request.queryParams("rename");
-                    String timestamp = request.queryParams("rename");
-                    String url = request.queryParams("rename");
-                    //We may need additional information.
-
-                    //Insert code here, also probably with a method.
-
-                    return "";
+                    String lat = request.queryParams("lat");
+                    String lon = request.queryParams("lon");
+                    String text = request.queryParams("text");
+                    String timestamp = request.queryParams("timestamp");
+                    String url = request.queryParams("url");
+                    insertSighting(conn, lat, lon, text, timestamp, url);
+                    return "Success!";
                 }
         );
         Spark.post(
@@ -94,9 +91,8 @@ public class Main {
         // I think this method will work for what we need.
     }
 
-    public static void insertSighting(Connection conn, int userId, String lat, String lon, String text, String timestamp, String url) throws SQLException {
+    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO sighting VALUES (NULL, ?, ?, ?, ?, ?)");
-        stmt.setInt(1, userId);
         stmt.setString(2, lat);
         stmt.setString(3, lon);
         stmt.setString(4, text);
@@ -118,8 +114,8 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            int userId = results.getInt("user_id");
-            return new Sighting(id, lat, lon, text, timestamp, url, userId);
+            //int userId = results.getInt("user_id");
+            return new Sighting(id, lat, lon, text, timestamp, url);
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
         }
