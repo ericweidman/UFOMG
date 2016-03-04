@@ -25,7 +25,7 @@ public class Main {
         Spark.post(
                 "/", //  This will likely be where we create users. Will rename to something like "/create-user"
                 (request, response) -> {
-                    String userName = request.queryParams("rename"); //We need ot figure out these calls as a group.
+                    String userName = request.queryParams("rename"); //We need to figure out these call names as a group.
                     String userPass = request.queryParams("renameThisToo");
 
                     //Insert code here, probably with a method.
@@ -49,7 +49,7 @@ public class Main {
                 }
         );
         Spark.post(
-                "/", //  Logout. I'm not sure how much of this post we'll need to change.
+                "/", //  Logout. I'm not sure how much of this post route we'll need to change.
                 (request, response) -> {
                     Session session = request.session();
                     session.invalidate();
@@ -68,7 +68,7 @@ public class Main {
         // Some of this may change.
         stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, location VARCHAR, text VARCHAR, timestamp VARCHAR," +
                 "url VARCHAR, user_id INT)");
-        // We may need too add additional information here, also I think we need to create a userId int
+        // We may need to add additional information here
         // so that we can INNER JOIN them. I need some clarification on this.
     }
 
@@ -77,7 +77,7 @@ public class Main {
         stmt.setString(1, userName);
         stmt.setString(1, userPass);
         stmt.execute();
-        // This should cover it. Again, maybe?
+        // This should cover it. Maybe?
     }
 
     public static User selectUser(Connection conn, String userName) throws SQLException {
