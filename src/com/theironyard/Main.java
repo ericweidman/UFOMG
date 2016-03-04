@@ -1,10 +1,16 @@
 package com.theironyard;
 
+import com.sun.org.apache.xml.internal.utils.Hashtree2Node;
 import jodd.json.JsonSerializer;
+import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
+import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 public class Main {
 
@@ -17,10 +23,45 @@ public class Main {
         Spark.get(
                 "/index",
                 (request, response) -> {
-                    JsonSerializer serializer = new JsonSerializer();
-                    //Insert some kind of code here.
-                    return serializer.serialize("INSERT SOMETHING HERE!");
-                }
+//                    JsonSerializer serializer = new JsonSerializer();
+//                    //Insert some kind of code here.
+//                    return serializer.serialize("INSERT SOMETHING HERE!");
+                    Session session = request.session();
+                    String userName = session.attribute("userName");
+                    User user = selectUser(conn, userName);
+
+                    HashMap m = new HashMap();
+                    m.put("userName", userName);
+                    ArrayList<Sighting> allSightings = selectSightings(conn);
+                    m.put("allSightings", allSightings);
+
+                    if (user != null) {
+                        m.put("sightings", user.sightings);
+                    }
+                    return new ModelAndView(m, index.html);
+                }),
+                new MustacheTemplateEngine();
+
+    );
+
+        Spark.post(
+                "/login",
+                ((request, response) ->  {
+                    String userName = request.queryParams("userName");
+                    String userPass = request.queryParams("userPass");
+                    if (userName == null) {
+                        throw new Exception("Login name not found");
+                    }
+                    User user = selectUser(conn, userName);
+                    if ( user == null) {
+                        insertUser(conn, userName, userPass);
+                    }
+
+                    Session session = request.session();
+                    session.attribute("userName", userName);
+                    response.redirect("/index");
+                    return "";
+                })
         );
 
         Spark.post(
@@ -36,6 +77,8 @@ public class Main {
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
+                    //ADD THIS? Session session = request.session
+                    //  String name = session.attribute("userName");
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
                     response.redirect("/");
@@ -58,6 +101,8 @@ public class Main {
         Spark.post(
                 "/update-sighting",
                 (request, response) -> {
+
+
                     String lat = request.queryParams("lat");
                     String lon = request.queryParams("lon");
                     String text = request.queryParams("text");
@@ -115,6 +160,21 @@ public class Main {
         // I think this method will work for what we need. AGREED
     }
 
+    public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
+        ArrayList<User> users = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id ");
+        ResultSet results = stmt.executeQuery();
+        while (results.next()) {
+            int id = results.getInt("user.id");
+            String userName = results.getString("user.username");
+            String userPass = results.getString("user.userpass");
+            User user = new User(id, userName, userPass);
+            users.add(user);
+
+        }
+        return users;
+    }
+
     public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?)");
         stmt.setString(1, lat);
@@ -126,6 +186,7 @@ public class Main {
 
         //I think this is good too.
     }
+
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN users ON" +
@@ -141,9 +202,28 @@ public class Main {
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
+
             // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
+    }
+
+    public static ArrayList<Sighting> selectSightings(Connection conn) throws SQLException {
+        ArrayList<Sighting> sightings = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id"); //DONT NEED INNER JOIN
+        ResultSet results = stmt.executeQuery();
+        while (results.next()) {
+            int id = results.getInt("sightings.id");
+            String lat = results.getString("sightings.lat");
+            String lon = results.getString("sightings.lon");
+            String text = results.getString("text");
+            String timestamp = results.getString("timestamp");
+            String url = results.getString("url");
+            //String name = results.getString("users.name");
+            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
+            sightings.add(sighting);
+        }
+        return sightings;
     }
 
     static void deleteSighting(Connection conn, int id) throws SQLException {
@@ -159,8 +239,14 @@ public class Main {
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
+        stmt.setInt(6, id);
+
+    }
 
 
+    static User getUserFromSession(Connection conn, Session session) {
+        String name = session.attribute("UserName");
+        return selectUser(conn, userName);
     }
     //  Our naming conventions for posts.
     //  "/create-"
