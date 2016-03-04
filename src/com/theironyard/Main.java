@@ -1,16 +1,11 @@
 package com.theironyard;
 
-import com.sun.org.apache.xml.internal.utils.Hashtree2Node;
 import jodd.json.JsonSerializer;
-import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
-import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.ResourceBundle;
 
 public class Main {
 
