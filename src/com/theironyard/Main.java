@@ -38,7 +38,7 @@ public class Main {
                     if (user != null) {
                         m.put("sightings", user.sightings);
                     }
-                    return new ModelAndView(m, index.html);
+                    return new ModelAndView(m, "index.html");
                 }),
                 new MustacheTemplateEngine();
 
@@ -77,8 +77,8 @@ public class Main {
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
-                    //ADD THIS? Session session = request.session
-                    //  String name = session.attribute("userName");
+                    Session session = request.session();
+                    String name = session.attribute("userName");
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
                     response.redirect("/");
@@ -239,14 +239,14 @@ public class Main {
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
-        stmt.setInt(6, id);
+
 
     }
 
 
-    static User getUserFromSession(Connection conn, Session session) {
+    static User getUserFromSession(Connection conn, Session session) throws SQLException {
         String name = session.attribute("UserName");
-        return selectUser(conn, userName);
+        return selectUser(conn, name);
     }
     //  Our naming conventions for posts.
     //  "/create-"
