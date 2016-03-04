@@ -14,7 +14,7 @@ public class Main {
 
         Spark.init();
         Spark.get(
-                "/", //  This will be renamed to /index?
+                "/index", //  This will be renamed to /index?
                 (request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
                     //Insert some kind of code here.
@@ -30,14 +30,15 @@ public class Main {
 
                     //Insert code here, probably with a method.
 
-                    return "";
+                    return "Aliens!";
                 }
         );
 
         Spark.post(
                 "/", //  Create sighting.
                 (request, response) -> {
-                    String location = request.queryParams("rename");
+                    String lat = request.queryParams("rename");
+                    String lon = request.queryParams("rename");
                     String text = request.queryParams("rename");
                     String timestamp = request.queryParams("rename"); //Date and time?
                     String url = request.queryParams("rename");
@@ -66,7 +67,7 @@ public class Main {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS user (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
         // Some of this may change.
-        stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, location VARCHAR, text VARCHAR, timestamp VARCHAR," +
+        stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," +
                 "url VARCHAR, user_id INT)");
         // We may need to add additional information here
         // so that we can INNER JOIN them. I need some clarification on this.
@@ -94,33 +95,55 @@ public class Main {
         // I think this method will work for what we need.
     }
 
-    public static void insertSighting(Connection conn, int userId, String location, String text, String timestamp, String url) throws SQLException {
+    public static void insertSighting(Connection conn, int userId, String lat, String lon, String text, String timestamp, String url) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO sighting VALUES (NULL, ?, ?, ?, ?, ?)");
         stmt.setInt(1, userId);
-        stmt.setString(2, location);
-        stmt.setString(3, text);
-        stmt.setString(4, timestamp);
-        stmt.setString(5, url);
+        stmt.setString(2, lat);
+        stmt.setString(3, lon);
+        stmt.setString(4, text);
+        stmt.setString(5, timestamp);
+        stmt.setString(6, url);
         stmt.execute();
 
         //I think this is good too.
     }
+
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN user ON" +
                 "sighting.user_id = user.id WHERE sighting.id = ?)");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
-            String location = results.getString("sighting.location");
+            String lat = results.getString("sighting.lat");
+            String lon = results.getString("sighting.lon");
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            return new Sighting(id, location, text, timestamp, url);
+            return new Sighting(id, lat, lon, text, timestamp, url);
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
     }
+
+    static void deleteSighting(Connection conn, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM WHERE id = ?)");
+        stmt.setInt(1, id);
+        stmt.execute();
+    }
+
+    static void editSighting(Connection conn, int id, String lat, String lon, String text, String timestamp, String url) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET ?, ?, ?, ?, ? WHERE id = ?)");
+        stmt.setString(1, lat);
+        stmt.setString(2, lon);
+        stmt.setString(3, text);
+        stmt.setString(4, timestamp);
+        stmt.setString(5, url);
+        stmt.setInt(6, id);
+
+    }
+
+
     //We will need to create methods to update and delete sightings, and maybe users?
 
     //These are the SQL commands for updating and deleting.
@@ -128,5 +151,10 @@ public class Main {
     //stmt.execute("DELETE FROM players WHERE name = 'Bob'");
 
     //GameTracker has an example method for deleting.
+    //  "/create"
+    //  "/read"
+    //  "/update-"
+    //  "/delete-"
+    //
 }
 
