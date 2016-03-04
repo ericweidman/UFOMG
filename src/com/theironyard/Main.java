@@ -1,10 +1,16 @@
 package com.theironyard;
 
+import com.sun.org.apache.xml.internal.utils.Hashtree2Node;
 import jodd.json.JsonSerializer;
+import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
+import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.ResourceBundle;
 
 public class Main {
 
@@ -17,10 +23,45 @@ public class Main {
         Spark.get(
                 "/index",
                 (request, response) -> {
-                    JsonSerializer serializer = new JsonSerializer();
-                    //Insert some kind of code here.
-                    return serializer.serialize("INSERT SOMETHING HERE!");
-                }
+//                    JsonSerializer serializer = new JsonSerializer();
+//                    //Insert some kind of code here.
+//                    return serializer.serialize("INSERT SOMETHING HERE!");
+                    Session session = request.session();
+                    String userName = session.attribute("userName");
+                    User user = selectUser(conn, userName);
+
+                    HashMap m = new HashMap();
+                    m.put("userName", userName);
+                    ArrayList<Sighting> allSightings = selectSightings(conn);
+                    m.put("allSightings", allSightings);
+
+                    if (user != null) {
+                        m.put("sightings", user.sightings);
+                    }
+                    return new ModelAndView(m, index.html);
+                }),
+                new MustacheTemplateEngine();
+
+    );
+
+        Spark.post(
+                "/login",
+                ((request, response) ->  {
+                    String userName = request.queryParams("userName");
+                    String userPass = request.queryParams("userPass");
+                    if (userName == null) {
+                        throw new Exception("Login name not found");
+                    }
+                    User user = selectUser(conn, userName);
+                    if ( user == null) {
+                        insertUser(conn, userName, userPass);
+                    }
+
+                    Session session = request.session();
+                    session.attribute("userName", userName);
+                    response.redirect("/index");
+                    return "";
+                })
         );
 
         Spark.post(
@@ -36,6 +77,8 @@ public class Main {
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
+                    //ADD THIS? Session session = request.session
+                    //  String name = session.attribute("userName");
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
                     response.redirect("/");
@@ -59,8 +102,16 @@ public class Main {
                 "/update-sighting",
                 (request, response) -> {
 
+
+                    String lat = request.queryParams("lat");
+                    String lon = request.queryParams("lon");
+                    String text = request.queryParams("text");
+                    String timestamp = request.queryParams("timestamp");
+                    String url = request.queryParams("url");
+                    updateSighting(conn, lat, lon, text, timestamp, url);
                     response.redirect("/");
                     return "";
+
                 }
         );
         Spark.post(
@@ -79,12 +130,12 @@ public class Main {
 
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
-        stmt.execute("CREATE TABLE IF NOT EXISTS user (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
         // Some of this may change.
-        stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," +
+        stmt.execute("CREATE TABLE IF NOT EXISTS sightings (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," + //WHY IS THERE A + HERE?
                 "url VARCHAR, user_id INT)");
         // We may need to add additional information here
-        // so that we can INNER JOIN them. I need some clarification on this.
+        // so that we can INNER JOIN them. I need some clarification on this. NOTHING ELSE NEEDED HERE
     }
 
     public static void insertUser(Connection conn, String userName, String userPass) throws SQLException {
@@ -92,11 +143,11 @@ public class Main {
         stmt.setString(1, userName);
         stmt.setString(2, userPass);
         stmt.execute();
-        // This should cover it. Maybe?
+        // This should cover it. Maybe? YEP
     }
 
     public static User selectUser(Connection conn, String userName) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE user_name = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE user_name = ?)");
         stmt.setString(1, userName);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
@@ -106,24 +157,40 @@ public class Main {
         }
         return null;
 
-        // I think this method will work for what we need.
+        // I think this method will work for what we need. AGREED
+    }
+
+    public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
+        ArrayList<User> users = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id ");
+        ResultSet results = stmt.executeQuery();
+        while (results.next()) {
+            int id = results.getInt("user.id");
+            String userName = results.getString("user.username");
+            String userPass = results.getString("user.userpass");
+            User user = new User(id, userName, userPass);
+            users.add(user);
+
+        }
+        return users;
     }
 
     public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sighting VALUES (NULL, ?, ?, ?, ?, ?)");
-        stmt.setString(2, lat);
-        stmt.setString(3, lon);
-        stmt.setString(4, text);
-        stmt.setString(5, timestamp);
-        stmt.setString(6, url);
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt.setString(1, lat);
+        stmt.setString(2, lon);
+        stmt.setString(3, text);
+        stmt.setString(4, timestamp);
+        stmt.setString(5, url);
         stmt.execute();
 
         //I think this is good too.
     }
 
+
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN user ON" +
-                "sighting.user_id = user.id WHERE sighting.id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN users ON" +
+                "sightings.user_id = users.id WHERE sightings.id = ?)");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
@@ -132,12 +199,31 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            //int userId = results.getInt("user_id");
+            //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
+
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
+    }
+
+    public static ArrayList<Sighting> selectSightings(Connection conn) throws SQLException {
+        ArrayList<Sighting> sightings = new ArrayList<>();
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id"); //DONT NEED INNER JOIN
+        ResultSet results = stmt.executeQuery();
+        while (results.next()) {
+            int id = results.getInt("sightings.id");
+            String lat = results.getString("sightings.lat");
+            String lon = results.getString("sightings.lon");
+            String text = results.getString("text");
+            String timestamp = results.getString("timestamp");
+            String url = results.getString("url");
+            //String name = results.getString("users.name");
+            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
+            sightings.add(sighting);
+        }
+        return sightings;
     }
 
     static void deleteSighting(Connection conn, int id) throws SQLException {
@@ -146,7 +232,7 @@ public class Main {
         stmt.execute();
     }
 
-    static void editSighting(Connection conn, int id, String lat, String lon, String text, String timestamp, String url) throws SQLException {
+    static void updateSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
@@ -155,6 +241,12 @@ public class Main {
         stmt.setString(5, url);
         stmt.setInt(6, id);
 
+    }
+
+
+    static User getUserFromSession(Connection conn, Session session) {
+        String name = session.attribute("UserName");
+        return selectUser(conn, userName);
     }
     //  Our naming conventions for posts.
     //  "/create-"
