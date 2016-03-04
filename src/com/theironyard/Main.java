@@ -79,12 +79,12 @@ public class Main {
 
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
-        stmt.execute("CREATE TABLE IF NOT EXISTS user (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
         // Some of this may change.
-        stmt.execute("CREATE TABLE IF NOT EXISTS sighting (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," +
+        stmt.execute("CREATE TABLE IF NOT EXISTS sightings (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," + //WHY IS THERE A + HERE?
                 "url VARCHAR, user_id INT)");
         // We may need to add additional information here
-        // so that we can INNER JOIN them. I need some clarification on this.
+        // so that we can INNER JOIN them. I need some clarification on this. NOTHING ELSE NEEDED HERE
     }
 
     public static void insertUser(Connection conn, String userName, String userPass) throws SQLException {
@@ -92,11 +92,11 @@ public class Main {
         stmt.setString(1, userName);
         stmt.setString(2, userPass);
         stmt.execute();
-        // This should cover it. Maybe?
+        // This should cover it. Maybe? YEP
     }
 
     public static User selectUser(Connection conn, String userName) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE user_name = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE user_name = ?)");
         stmt.setString(1, userName);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
@@ -106,24 +106,24 @@ public class Main {
         }
         return null;
 
-        // I think this method will work for what we need.
+        // I think this method will work for what we need. AGREED
     }
 
     public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sighting VALUES (NULL, ?, ?, ?, ?, ?)");
-        stmt.setString(2, lat);
-        stmt.setString(3, lon);
-        stmt.setString(4, text);
-        stmt.setString(5, timestamp);
-        stmt.setString(6, url);
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?)");
+        stmt.setString(1, lat);
+        stmt.setString(2, lon);
+        stmt.setString(3, text);
+        stmt.setString(4, timestamp);
+        stmt.setString(5, url);
         stmt.execute();
 
         //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN user ON" +
-                "sighting.user_id = user.id WHERE sighting.id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN users ON" +
+                "sightings.user_id = users.id WHERE sightings.id = ?)");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
@@ -132,7 +132,7 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            //int userId = results.getInt("user_id");
+            //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
