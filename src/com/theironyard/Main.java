@@ -16,15 +16,13 @@ public class Main {
         Spark.externalStaticFileLocation("public");
         Spark.init();
         Spark.get(
-                "/index",
+                "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
                     Session session = request.session();
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
-
                     ArrayList<Sighting> allSightings = selectSightings(conn);
-
                     return serializer.serialize(allSightings);
                 })
         );
