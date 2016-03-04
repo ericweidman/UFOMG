@@ -10,11 +10,12 @@ public class Main {
 
     public static void main(String[] args) throws SQLException {
         Connection conn = DriverManager.getConnection("jdbc:h2:./main");
+        createTables(conn);
 
 
         Spark.init();
         Spark.get(
-                "/index", //  This will be renamed to /index?
+                "/index",
                 (request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
                     //Insert some kind of code here.
@@ -133,7 +134,7 @@ public class Main {
     }
 
     static void editSighting(Connection conn, int id, String lat, String lon, String text, String timestamp, String url) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET ?, ?, ?, ?, ? WHERE id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
