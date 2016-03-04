@@ -75,7 +75,7 @@ public class Main {
     public static void insertUser(Connection conn, String userName, String userPass) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("INSERT INTO user VALUES (NULL, ?, ?)");
         stmt.setString(1, userName);
-        stmt.setString(1, userPass);
+        stmt.setString(2, userPass);
         stmt.execute();
         // This should cover it. Maybe?
     }
