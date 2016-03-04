@@ -24,24 +24,22 @@ public class Main {
         );
 
         Spark.post(
-                "/", //  This will likely be where we create users. Will rename to something like "/create-user"
+                "/create-user",
                 (request, response) -> {
-                    String userName = request.queryParams("rename"); //We need to figure out these call names as a group.
-                    String userPass = request.queryParams("renameThisToo");
-
-                    //Insert code here, probably with a method.
-
-                    return "Aliens!";
+                    String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
+                    String userPass = request.queryParams("userPass");
+                    insertUser(conn, userName, userPass);
+                    return "Success!";
                 }
         );
 
         Spark.post(
-                "/", //  Create sighting.
+                "/create-sighting",
                 (request, response) -> {
                     String lat = request.queryParams("rename");
                     String lon = request.queryParams("rename");
                     String text = request.queryParams("rename");
-                    String timestamp = request.queryParams("rename"); //Date and time?
+                    String timestamp = request.queryParams("rename");
                     String url = request.queryParams("rename");
                     //We may need additional information.
 
@@ -51,7 +49,7 @@ public class Main {
                 }
         );
         Spark.post(
-                "/", //  Logout. I'm not sure how much of this post route we'll need to change.
+                "/logout", //  Logout. I'm not sure how much of this post route we'll need to change.
                 (request, response) -> {
                     Session session = request.session();
                     session.invalidate();
@@ -120,7 +118,8 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            return new Sighting(id, lat, lon, text, timestamp, url);
+            int userId = results.getInt("user_id");
+            return new Sighting(id, lat, lon, text, timestamp, url, userId);
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
         }
