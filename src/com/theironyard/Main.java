@@ -40,7 +40,6 @@ public class Main {
                     deleteSighting(conn, deleteById);
                     response.redirect("/");
                     return "";
-
                 }
         );
         Spark.post(
@@ -54,6 +53,14 @@ public class Main {
                     insertSighting(conn, lat, lon, text, timestamp, url);
                     response.redirect("/");
                     return "Success!";
+                }
+        );
+        Spark.post(
+                "/update-sighting",
+                (request, response) -> {
+
+                    response.redirect("/");
+                    return "";
                 }
         );
         Spark.post(
