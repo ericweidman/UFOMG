@@ -19,7 +19,8 @@ var ufomg =  {
 
   },
   events: function(){
-
+    $('.submit input').on('click', ufomg.login);
+    $('.add-new input').on('click', );
   },
   getTemplate: function(templateName){
     return templates[templateName];
@@ -38,12 +39,19 @@ var ufomg =  {
     });
   },
   login: function(){
+    var login = getLogin();
 
+  },
+  getLogin: function(){
+    var username = $('.username input').val();
+    var password = $('.password input').val();
+    $('.login input[type="text"]').val('');
+    return [username, password];
   },
   logout: function(){
 
   },
-  addUser: function(){
+  addUser: function(data){
     $.ajax({
       url: ufomg.userRoute + ufomg.crudActions[0],
       method: "POST",
@@ -55,7 +63,7 @@ var ufomg =  {
       }
     });
   },
-  getUser: function(id) {
+  getUser: function(data) {
     $.ajax({
       url: ufomg.userRoute + ufomg.crudActions[1],
       method: "GET",
@@ -67,12 +75,12 @@ var ufomg =  {
       }
     });
   },
-  getFeed: function(id) {
+  getFeed: function(data) {
     $.ajax({
       url: ufomg.sightingRoute + ufomg.crudActions[1],
       method: "GET",
       success: function(result){
-        if(result.length !== ufomg.config.feedData) {
+        if(result.length !== ufomg.config.feedData.length) {
           ufomg.config.feedData = result;
         }
       },
@@ -81,7 +89,7 @@ var ufomg =  {
       }
     });
   },
-  editFeed: function(id) {
+  editFeed: function(data) {
     $.ajax({
       url: ufomg.sightingRoute + ufomg.crudActions[2],
       method: "PUT",
@@ -93,7 +101,7 @@ var ufomg =  {
       }
     });
   },
-  addFeed: function() {
+  addFeed: function(data) {
     $.ajax({
       url: ufomg.sightingRoute + ufomg.crudActions[0],
       method: "POST",
@@ -105,7 +113,7 @@ var ufomg =  {
       }
     });
   },
-  deleteFeed: function(id) {
+  deleteFeed: function(data) {
     $.ajax({
       url: ufomg.sightingRoute + ufomg.crudActions[3],
       method: "DELETE",
@@ -119,8 +127,6 @@ var ufomg =  {
   },
   checkDataUpdates: function(){
     ufomg.pollData(ufomg.getFeed, 1000, true);
-
-
   },
   pollData: function(callback, pollRate, flag){
     if(flag){
