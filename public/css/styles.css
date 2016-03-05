@@ -23,6 +23,7 @@ h4 {
   text-align: center; }
 
 .login {
+  display: none;
   margin: 0 auto;
   width: 40%;
   background-color: #a391a2;
@@ -39,3 +40,13 @@ h4 {
 .submit button, .add-new button {
   width: 30%;
   display: inline-block; }
+
+.feed .feedItem {
+  height: 250px;
+  background-repeat: no-repeat; }
+
+.feed .feedItem:nth-child(odd) {
+  background-image: url("/css/images/StarryNight2.jpg"); }
+
+.feed .feedItem:nth-child(even) {
+  background-image: url("/css/images/space1.png"); }
