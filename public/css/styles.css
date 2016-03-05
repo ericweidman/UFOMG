@@ -16,30 +16,41 @@ h1 {
   color: white;
   text-align: center;
   font-family: 'Quantico', sans-serif;
-  font-size: 80px;
+  font-size: 100px;
   letter-spacing: 5px;
   margin-bottom: 5px; }
 
 h4 {
   color: white;
   text-align: center;
-  font-size: 17px;
+  font-size: 27px;
   font-weight: lighter; }
 
 .login {
   margin: 0 auto;
   width: 40%;
-  background-color: #a391a2;
+  /*background-color: white;*/
   padding: 39px;
   margin-top: 60px;
-  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6); }
+  /*box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);*/ }
 
 .username input, .password input {
   width: 60%;
   height: 29px;
   margin: 10px 90px;
-  text-align: center; }
+  text-align: center;
+  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6); }
 
-.submit button, .add-new button {
+.add-new, .submit {
   width: 30%;
-  display: inline-block; }
+  margin: 0; }
+
+.submit button {
+  width: 90%;
+  display: inline-block;
+  margin-left: 90px; }
+
+/*.add-new button {
+   width:90%;
+   display: inline-block;
+ }*/
