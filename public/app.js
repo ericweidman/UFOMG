@@ -16,11 +16,12 @@ var ufomg =  {
     geocoderResult: undefined,
   },
   presentation: function(){
-
+    $.stellar();
+    ufomg.initializeGeocoder();
   },
   events: function(){
     $('.submit input').on('click', ufomg.login);
-    $('.add-new input').on('click', );
+    $('.add-new input').on('click', function(){});
   },
   getTemplate: function(templateName){
     return templates[templateName];
@@ -148,5 +149,20 @@ var ufomg =  {
     });
   },
   decodeAddress: function(coords){
+    var latlong = {
+      lat: coords.latitude,
+      lng: coords.longitude
+    }
+    ufomg.config.geocoder.geocode({'location': latlong}, function(results, status){
+      if(status === google.maps.GeocoderStatus.OK) {
+        ufomg.config.geocoderResult = results;
+      } else {
+        console.log("Reverse Geocoder error", status)
+      }
+    });
   }
 }
+
+$(document).ready(function(){
+  ufomg.init();
+})
