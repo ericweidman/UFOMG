@@ -93,15 +93,13 @@ public class Main {
                     String text = request.queryParams("text");
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
-                    int userId = Integer.valueOf(request.queryParams("user_id"));
                     Session session = request.session();
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
-                    insertSighting(conn, lat, lon, text, timestamp, url, userId, userName);;
                     if (user == null) {
                         throw new Exception("User not logged in.");
                     }
-                    insertSighting(conn, lat, lon, text, timestamp, url, userId, userName);
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id, userName);
                     return "Success!";
                 }
         );
