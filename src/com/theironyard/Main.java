@@ -16,16 +16,23 @@ public class Main {
         Spark.externalStaticFileLocation("public");
         Spark.init();
         Spark.get(
-                "/index",
+                "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
-                    Session session = request.session();
-                    String userName = session.attribute("userName");
-                    User user = selectUser(conn, userName);
 
                     ArrayList<Sighting> allSightings = selectSightings(conn);
 
                     return serializer.serialize(allSightings);
+
+                })
+        );
+
+        Spark.get(
+                "/allUsers",
+                ((request1, response1) -> {
+                    JsonSerializer serializer = new JsonSerializer();
+                    ArrayList<User> allUsers = selectUsers(conn);
+                    return serializer.serialize(allUsers);
                 })
         );
 
@@ -51,10 +58,25 @@ public class Main {
         Spark.post(
                 "/create-user",
                 (request, response) -> {
-                    String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
+                    String userName = request.queryParams("userName"); .
                     String userPass = request.queryParams("userPass");
+                    User user = selectUser(conn, userName);
+                    if (user != null) {
+                        Spark.halt(403);
+                        System.out.println("Username already exists");
+
+                    }
+
                     insertUser(conn, userName, userPass);
-                    return userName;
+                    Session session = request.session();
+                    session.attribute("userName", userName);
+
+                    JsonSerializer serializer = new JsonSerializer();
+                    return serializer.serialize(user);
+
+
+                    //check if username already exists if does send error, if not add and send success
+
                 }
         );
         Spark.post(
@@ -218,9 +240,6 @@ public class Main {
 
     }
 
-    static User getUserFromSession(Connection conn, Session session) throws SQLException {
-        String name = session.attribute("UserName");
-        return selectUser(conn, name);
     }
     //  Our naming conventions for posts.
     //  "/create-"
@@ -228,5 +247,4 @@ public class Main {
     //  "/update-"
     //  "/delete-"
     //
-}
 
