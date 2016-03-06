@@ -50,8 +50,8 @@ var ufomg =  {
     var password = $('.password input').val();
     $('.login input[type="text"]').val('');
     return {
-      username: username,
-      password: password
+      "userName": username,
+      "userPass": password
     };
   },
   logout: function(){
@@ -59,9 +59,10 @@ var ufomg =  {
   },
   addUser: function(data){
     $.ajax({
-      url: ufomg.config.crudActions[0] + ufomg.config.userRoute,
+      url: "/create-user",
       method: "POST",
       data: data,
+      type: "JSON",
       success: function(result){
 
       },

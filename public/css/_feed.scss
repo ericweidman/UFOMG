@@ -1,14 +1,22 @@
-.feed {
+.mainContent header {
+  width: 100%;
+  // position: fixed;
+  height: 200px;
+  // background-image: url("images/StarryNight2.jpg");
+  h1, h4 {
+    margin: 0;
+    padding: 0;
+  }
+}
 
+.feed {
+  width: 80%;
+  margin: 0 auto;
+  // padding-top: 200px;
   .feedItem {
     height: 250px;
     background-repeat: no-repeat;
     background-attachment: fixed;
-  }
-  .feedItem:nth-child(odd) {
-    background-image: url('/css/images/StarryNight2.jpg');
-  }
-  .feedItem:nth-child(even) {
-    background-image: url('/css/images/StarryNight2.jpg');
+    // background-image: url('images/StarryNight2.jpg');
   }
 }
