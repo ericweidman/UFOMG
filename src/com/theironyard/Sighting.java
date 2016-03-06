@@ -10,15 +10,17 @@ public class Sighting {
     String text;
     String timestamp;
     String url;
+    String userName;
 
 
-    public Sighting(int id, String lat, String lon, String text, String timestamp, String url) {
+    public Sighting(int id, String lat, String lon, String text, String timestamp, String url, String userName) {
         this.id = id;
         this.lat = lat;
         this.lon = lon;
         this.text = text;
         this.timestamp = timestamp;
         this.url = url;
+        this.userName = userName;
 
     }
 
@@ -69,5 +71,17 @@ public class Sighting {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getLon() {
+        return lon;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }

@@ -56,7 +56,7 @@ public class Main {
 
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    return user.id + " " + user.userName;
+                    return "userName, user.id";
                 })
         );
 
@@ -200,8 +200,9 @@ public class Main {
             String text = results.getString("sightings.text");
             String timestamp = results.getString("sightings.timestamp");
             String url = results.getString("sightings.url");
+            String userName = results.getString("users.user_name");
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
-            return new Sighting(id, lat, lon, text, timestamp, url);
+            return new Sighting(id, lat, lon, text, timestamp, url,userName);
 
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
@@ -220,8 +221,8 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            String name = results.getString("users.name");
-            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
+            String name = results.getString("users.user_name");
+            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url, name);
             sightings.add(sighting);
         }
         return sightings;
