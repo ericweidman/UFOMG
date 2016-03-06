@@ -77,7 +77,7 @@ public class Main {
                 })
         );
 
-        Spark.post(
+        Spark.delete(
                 "/delete-sighting",
                 (request, response) -> {
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
@@ -229,7 +229,7 @@ public class Main {
     }
 
     static void deleteSighting(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM WHERE id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM sightings WHERE id = ?)");
         stmt.setInt(1, id);
         stmt.execute();
     }
