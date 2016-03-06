@@ -19,9 +19,7 @@ public class Main {
                 "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
-
                     ArrayList<Sighting> allSightings = selectSightings(conn);
-
                     return serializer.serialize(allSightings);
 
                 })
@@ -104,14 +102,13 @@ public class Main {
                 }
         );
         Spark.post(
-                "/logout", //  Logout. I'm not sure how much of this post route we'll need to change.
+                "/logout",
                 (request, response) -> {
                     Session session = request.session();
                     session.invalidate();
                     return "";
                 }
         );
-        // We're probably going to need to write more posts, but I think this will be enough to get us started.
 
 
     }
@@ -143,8 +140,6 @@ public class Main {
             return new User(id, userName, password);
         }
         return null;
-
-        // I think this method will work for what we need. AGREED
     }
 
     public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
@@ -171,7 +166,6 @@ public class Main {
         stmt.setString(5, url);
         stmt.execute();
 
-        //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
@@ -188,8 +182,6 @@ public class Main {
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
-
-            // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
     }
@@ -227,12 +219,5 @@ public class Main {
         stmt.setString(5, url);
 
     }
-
     }
-    //  Our naming conventions for posts.
-    //  "/create-"
-    //  "/read-"
-    //  "/update-"
-    //  "/delete-"
-    //
 
