@@ -111,7 +111,8 @@ public class Main {
                     String text = request.queryParams("text");
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
-                    updateSighting(conn, lat, lon, text, timestamp, url);
+                    int id = Integer.valueOf(request.queryParams("id"));
+                    updateSighting(conn, lat, lon, text, timestamp, url, id);
                     return "";
 
                 }
@@ -233,13 +234,14 @@ public class Main {
         stmt.execute();
     }
 
-    static void updateSighting(Connection conn,  String lat, String lon, String text, String timestamp, String url) throws SQLException {
+    static void updateSighting(Connection conn,  String lat, String lon, String text, String timestamp, String url, int id) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
-
+        stmt.setInt(6, id);
+        stmt.execute();
     }
 }
