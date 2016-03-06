@@ -103,7 +103,7 @@ public class Main {
                     return "Success!";
                 }
         );
-        Spark.post(
+        Spark.put(
                 "/update-sighting",
                 (request, response) -> {
                     String lat = request.queryParams("lat");
