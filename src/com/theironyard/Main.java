@@ -19,7 +19,9 @@ public class Main {
                 "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
+
                     ArrayList<Sighting> allSightings = selectSightings(conn);
+
                     return serializer.serialize(allSightings);
 
                 })
@@ -54,7 +56,7 @@ public class Main {
 
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    return user.id + " " + user.userName;
+                    return "userName, user.id";
                 })
         );
 
@@ -184,6 +186,7 @@ public class Main {
         stmt.setInt(6, userId);
         stmt.execute();
 
+        //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
@@ -197,7 +200,9 @@ public class Main {
             String text = results.getString("sightings.text");
             String timestamp = results.getString("sightings.timestamp");
             String url = results.getString("sightings.url");
-            return new Sighting(id, lat, lon, text, timestamp, url);
+            String userName = results.getString("users.user_name");
+            //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
+            return new Sighting(id, lat, lon, text, timestamp, url,userName);
 
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
@@ -207,7 +212,7 @@ public class Main {
 
     public static ArrayList<Sighting> selectSightings(Connection conn) throws SQLException {
         ArrayList<Sighting> sightings = new ArrayList<>();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id"); //DONT NEED INNER JOIN
         ResultSet results = stmt.executeQuery();
         while (results.next()) {
             int id = results.getInt("sightings.id");
@@ -216,7 +221,8 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
+            String name = results.getString("users.user_name");
+            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url, name);
             sightings.add(sighting);
         }
         return sightings;
