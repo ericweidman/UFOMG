@@ -50,7 +50,7 @@ public class Main {
                     }
 
                     Session session = request.session();
-                    session.attribute("userName", userName);
+                    session.attribute("userName", userName); //setting username in session
                     return "";
                 })
         );
@@ -86,7 +86,10 @@ public class Main {
                     String text = request.queryParams("text");
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
-                    insertSighting(conn, lat, lon, text, timestamp, url);
+                    Session session = request.session();
+                    String userName = session.attribute("userName");
+                    User user = selectUser(conn, userName);
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );
                     return "Success!";
                 }
         );
@@ -149,12 +152,12 @@ public class Main {
 
     public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
         ArrayList<User> users = new ArrayList<>();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id ");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users");
         ResultSet results = stmt.executeQuery();
         while (results.next()) {
-            int id = results.getInt("user.id");
-            String userName = results.getString("user.username");
-            String userPass = results.getString("user.userpass");
+            int id = results.getInt("id");
+            String userName = results.getString("user_name");
+            String userPass = results.getString("user_password");
             User user = new User(id, userName, userPass);
             users.add(user);
 
@@ -162,29 +165,30 @@ public class Main {
         return users;
     }
 
-    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?)");
+    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url, int userId) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?, ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
+        stmt.setInt(6, userId);
         stmt.execute();
 
         //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN users ON" +
-                "sightings.user_id = users.id WHERE sightings.id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON " +
+                "sightings.user_id = users.id WHERE sightings.id = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
-            String lat = results.getString("sighting.lat");
-            String lon = results.getString("sighting.lon");
-            String text = results.getString("text");
-            String timestamp = results.getString("timestamp");
-            String url = results.getString("url");
+            String lat = results.getString("sightings.lat");
+            String lon = results.getString("sightings.lon");
+            String text = results.getString("sightings.text");
+            String timestamp = results.getString("sightings.timestamp");
+            String url = results.getString("sightings.url");
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
