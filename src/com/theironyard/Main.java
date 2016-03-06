@@ -58,11 +58,13 @@ public class Main {
                 ((request, response) -> {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-//                    if (user != null) {
-//                        Spark.halt(403);
-//                        System.out.println("Username already exists");
-//
-//                    }
+                    Session session = request.session();
+                    String user = session.attribute(userName);
+                    if (user != null) {
+                        Spark.halt(403);
+                        System.out.println("Username already exists");
+
+                    }
                     insertUser(conn, userName, userPass);
                     return "Success!";
                 })
