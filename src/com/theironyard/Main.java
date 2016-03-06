@@ -229,7 +229,7 @@ public class Main {
     }
 
     static void deleteSighting(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("DELETE FROM sightings WHERE id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM sightings WHERE id = ?");
         stmt.setInt(1, id);
         stmt.execute();
     }
