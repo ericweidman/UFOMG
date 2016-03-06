@@ -57,28 +57,19 @@ public class Main {
 
         Spark.post(
                 "/create-user",
-                (request, response) -> {
+                ((request, response) -> {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    User user = selectUser(conn, userName);
-                    if (user != null) {
-                        Spark.halt(403);
-                        System.out.println("Username already exists");
-
-                    }
-
+//                    if (user != null) {
+//                        Spark.halt(403);
+//                        System.out.println("Username already exists");
+//
+//                    }
                     insertUser(conn, userName, userPass);
-                    Session session = request.session();
-                    session.attribute("userName", userName);
-
-                    JsonSerializer serializer = new JsonSerializer();
-                    return serializer.serialize(user);
-
-
-                    //check if username already exists if does send error, if not add and send success
-
-                }
+                    return "Success!";
+                })
         );
+
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
@@ -142,7 +133,6 @@ public class Main {
         stmt.setString(1, userName);
         stmt.setString(2, userPass);
         stmt.execute();
-        // This should cover it. Maybe? YEP
     }
 
     public static User selectUser(Connection conn, String userName) throws SQLException {

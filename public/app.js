@@ -6,8 +6,8 @@ var ufomg =  {
   config: {
     feedData: [],
     activeUser: "",
-    userRoute: "user-",
-    sightingRoute: "sighting-",
+    userRoute: "-user",
+    sightingRoute: "-sighting",
     crudActions: ["create", "read", "update", "delete"],
     pollingFunction: undefined,
     geoKey: "AIzaSyBbfNbCqRj5EvUHiGcKahKFu49CYetrxaE",
@@ -41,21 +41,28 @@ var ufomg =  {
   },
   login: function(){
     var login = getLogin();
+    $.ajax({
 
+    })
   },
   getLogin: function(){
     var username = $('.username input').val();
     var password = $('.password input').val();
     $('.login input[type="text"]').val('');
-    return [username, password];
+    return {
+      "userName": username,
+      "userPass": password
+    };
   },
   logout: function(){
-
+    $.ajax({})
   },
   addUser: function(data){
     $.ajax({
-      url: ufomg.userRoute + ufomg.crudActions[0],
+      url: "/create-user",
       method: "POST",
+      data: data,
+      type: "JSON",
       success: function(result){
 
       },
@@ -66,7 +73,7 @@ var ufomg =  {
   },
   getUser: function(data) {
     $.ajax({
-      url: ufomg.userRoute + ufomg.crudActions[1],
+      url: "/allUsers",
       method: "GET",
       success: function(result){
 
@@ -78,7 +85,7 @@ var ufomg =  {
   },
   getFeed: function(data) {
     $.ajax({
-      url: ufomg.sightingRoute + ufomg.crudActions[1],
+      url: "/allSightings",
       method: "GET",
       success: function(result){
         if(result.length !== ufomg.config.feedData.length) {
@@ -92,7 +99,7 @@ var ufomg =  {
   },
   editFeed: function(data) {
     $.ajax({
-      url: ufomg.sightingRoute + ufomg.crudActions[2],
+      url: "/update-sighting",
       method: "PUT",
       success: function(result){
 
@@ -104,8 +111,9 @@ var ufomg =  {
   },
   addFeed: function(data) {
     $.ajax({
-      url: ufomg.sightingRoute + ufomg.crudActions[0],
+      url: "/create-sighting",
       method: "POST",
+      data: data,
       success: function(result){
 
       },
@@ -116,7 +124,7 @@ var ufomg =  {
   },
   deleteFeed: function(data) {
     $.ajax({
-      url: ufomg.sightingRoute + ufomg.crudActions[3],
+      url: "/delete-sighting",
       method: "DELETE",
       success: function(result){
 
