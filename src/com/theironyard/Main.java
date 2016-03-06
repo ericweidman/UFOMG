@@ -80,8 +80,9 @@ public class Main {
         Spark.delete(
                 "/delete-sighting",
                 (request, response) -> {
-                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
-                    deleteSighting(conn, deleteById);
+                    String deleteById =request.queryParams("deleteSighting");
+                    int id = Integer.valueOf(deleteById);
+                    deleteSighting(conn, id);
                     return "";
                 }
         );
