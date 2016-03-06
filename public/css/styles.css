@@ -10,7 +10,8 @@
 body {
   width: 100%;
   background-image: url("images/StarryNight2.jpg");
-  background-repeat: no-repeat; }
+  background-repeat: repeat;
+  background-attachment: fixed; }
 
 h1 {
   color: white;
@@ -27,6 +28,7 @@ h4 {
   font-weight: lighter; }
 
 .login {
+  display: none;
   margin: 0 auto;
   width: 40%;
   /*background-color: white;*/
@@ -65,13 +67,17 @@ h4 {
 .submit button {
   margin-left: 90px; }
 
+.mainContent header {
+  width: 100%;
+  height: 200px; }
+  .mainContent header h1, .mainContent header h4 {
+    margin: 0;
+    padding: 0; }
+
 .feed {
-  display: none; }
+  width: 80%;
+  margin: 0 auto; }
   .feed .feedItem {
     height: 250px;
     background-repeat: no-repeat;
     background-attachment: fixed; }
-  .feed .feedItem:nth-child(odd) {
-    background-image: url("/css/images/StarryNight2.jpg"); }
-  .feed .feedItem:nth-child(even) {
-    background-image: url("/css/images/StarryNight2.jpg"); }
