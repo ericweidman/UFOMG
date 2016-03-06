@@ -41,7 +41,7 @@ public class Main {
                 ((request, response) ->  {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    if (userName == null) {
+                    if (userName.equals("") || userPass.equals("")) {
                         throw new Exception("Login name not found");
                     }
 
