@@ -58,7 +58,7 @@ public class MainTest {
         Connection conn = startConnection();
         Main.insertUser(conn, "paige", "4");
         User user = Main.selectUser(conn, "paige");
-        Main.insertSighting(conn,"alien", "50", "50", "5", "url", user.id, "user_name");
+        Main.insertSighting(conn,"alien", "50", "50", "5", "url", user.id);
         Sighting sighting = Main.selectSighting(conn, 1);
         endConnection(conn);
         Assert.assertTrue(sighting != null);
