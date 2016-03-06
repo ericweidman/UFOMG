@@ -27,7 +27,6 @@ h4 {
   font-weight: lighter; }
 
 .login {
-  display: none;
   margin: 0 auto;
   width: 40%;
   /*background-color: white;*/
@@ -57,10 +56,11 @@ h4 {
  }*/
 .feed .feedItem {
   height: 250px;
-  background-repeat: no-repeat; }
+  background-repeat: no-repeat;
+  background-attachment: fixed; }
 
 .feed .feedItem:nth-child(odd) {
   background-image: url("/css/images/StarryNight2.jpg"); }
 
 .feed .feedItem:nth-child(even) {
-  background-image: url("/css/images/space1.png"); }
+  background-image: url("/css/images/StarryNight2.jpg"); }
