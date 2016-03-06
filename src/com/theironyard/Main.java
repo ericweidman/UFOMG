@@ -93,6 +93,9 @@ public class Main {
                     Session session = request.session();
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
+                    if (user == null) {
+                        throw new Exception("User not logged in.");
+                    }
                     insertSighting(conn, lat, lon, text, timestamp, url, user.id );
                     return "Success!";
                 }
