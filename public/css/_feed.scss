@@ -17,8 +17,47 @@
   // padding-top: 200px;
   .feedItem {
     height: 250px;
+    margin-top: 50px;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    box-shadow: 0px 0px 50px 50px rgba(143, 156, 193, 0.4);
+    padding: 2%;
     // background-image: url('images/StarryNight2.jpg');
   }
 }
+
+.feedUser, .feedTime, .feedLocation {
+font-family: monospace;
+color: white;
+
+
+}
+
+
+.feedUser {
+
+font-size: 23px;
+
+}
+
+.feedTime {
+font-size: 18px;
+  margin-left: 10px;
+}
+
+p {
+  width: 60%;
+  color: white;
+  font-family: monospace;
+  font-size: 17px;
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 25px;
+  margin-left: 10px;
+}
+ .feedImg img {
+   width: 150px;
+   height:150px;
+   margin-top: 10px;
+   display: inline-block;
+ }
