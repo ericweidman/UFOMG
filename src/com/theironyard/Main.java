@@ -113,7 +113,24 @@ public class Main {
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
                     int id = Integer.valueOf(request.queryParams("id"));
-                    updateSighting(conn, lat, lon, text, timestamp, url, id);
+                    if(lat.equals("")){
+                        updateSighting(conn, " ", lon, text, timestamp, url, id);
+                    }
+                    if(lon.equals("")){
+                        updateSighting(conn, lat, " ", text, timestamp, url, id);
+                    }
+                    if(text.equals("")){
+                        updateSighting(conn, lat, lon, " ", timestamp, url, id);
+                    }
+                    if(timestamp.equals("")){
+                        updateSighting(conn, lat, lon, text, " ", url, id);
+                    }
+                    if(url.equals("")){
+                        updateSighting(conn, lat, lon, text, timestamp, " ", id);
+                    }
+                    else {
+                        updateSighting(conn, lat, lon, text, timestamp, url, id);
+                    }
                     return "";
 
                 }
