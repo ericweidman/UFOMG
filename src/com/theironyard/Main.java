@@ -49,7 +49,7 @@ public class Main {
                     if (user == null) {
                         throw new Exception("Please create an account.");
                     }
-                    if (user.userPass != userPass){
+                    if (!user.userPass.equals(userPass)){
                         throw new Exception("Password is incorrect!");
                     }
 
