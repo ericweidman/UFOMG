@@ -5,10 +5,6 @@ var ufomg =  {
   },
   config: {
     feedData: [],
-    activeUser: "",
-    userRoute: "-user",
-    sightingRoute: "-sighting",
-    crudActions: ["create", "read", "update", "delete"],
     pollingFunction: undefined,
     geoKey: "AIzaSyBbfNbCqRj5EvUHiGcKahKFu49CYetrxaE",
     geoRoute: "https://maps.googleapis.com/maps/api/js?key=",
@@ -40,9 +36,18 @@ var ufomg =  {
     });
   },
   login: function(){
-    var login = getLogin();
+    var login = ufomg.getLogin();
     $.ajax({
-
+      url: "/login",
+      method: "POST",
+      data: login,
+      success: function(result){
+        var output = result.split(" ");
+        sessionStorage.setItem("userID", result);
+      },
+      error: function(error){
+        console.log("Login error", error);
+      }
     })
   },
   getLogin: function(){
@@ -50,21 +55,22 @@ var ufomg =  {
     var password = $('.password input').val();
     $('.login input[type="text"]').val('');
     return {
-      "userName": username,
-      "userPass": password
+      userName: username,
+      userPass: password
     };
   },
   logout: function(){
-    $.ajax({})
+    $.ajax({
+      url: "/logout",
+    });
   },
   addUser: function(data){
     $.ajax({
       url: "/create-user",
       method: "POST",
       data: data,
-      type: "JSON",
       success: function(result){
-
+        console.log(result);
       },
       error: function(error){
         console.log("Add User", error);
@@ -121,6 +127,16 @@ var ufomg =  {
         console.log("Add Feed", error);
       }
     });
+  },
+  getFeedData: function(){
+    return {
+      lat: lat,
+      lon: lon,
+      text: text,
+      timestamp: timestamp,
+      url: url,
+      userName: userName
+    };
   },
   deleteFeed: function(data) {
     $.ajax({

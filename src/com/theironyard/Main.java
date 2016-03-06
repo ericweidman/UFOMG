@@ -96,11 +96,11 @@ public class Main {
                     Session session = request.session();
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
-                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );;
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id, userName);;
                     if (user == null) {
                         throw new Exception("User not logged in.");
                     }
-                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id, userName);
                     return "Success!";
                 }
         );
@@ -135,7 +135,7 @@ public class Main {
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
         // Some of this may change.
         stmt.execute("CREATE TABLE IF NOT EXISTS sightings (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," + //WHY IS THERE A + HERE?
-                "url VARCHAR, user_id INT)");
+                "url VARCHAR, user_id INT, user_name VARCHAR)");
         // We may need to add additional information here
         // so that we can INNER JOIN them. I need some clarification on this. NOTHING ELSE NEEDED HERE
     }
@@ -176,14 +176,15 @@ public class Main {
         return users;
     }
 
-    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url, int userId) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?, ?)");
+    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url, int userId, String userName) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?, ?, ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
         stmt.setInt(6, userId);
+        stmt.setString(7, userName);
         stmt.execute();
 
         //I think this is good too.
@@ -205,7 +206,7 @@ public class Main {
             return new Sighting(id, lat, lon, text, timestamp, url,userName);
 
 
-            // I think? This whole thing could be entirely broken. Let me know what you think.
+
         }
         return null;
     }
