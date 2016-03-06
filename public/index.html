@@ -27,11 +27,23 @@
         <button type="button" name="button">Add new user</button>
       </div>
     </section>
+
     <section class='mainContent'>
       <header>
         <h1>UFOMG</h1>
         <h4>A UFO site for social people</h4>
+          <button type="button" name="Add-new-entry">Add new entry</button>
       </header>
+
+      <section class='new-entry'>
+
+        <form class="entry-fields">
+          <input type="text" name="name" placeholder="Image URL">
+          <input type="text" name="name" placeholder="Date and time">
+          <input type="text" name="name" placeholder="Location">
+          <textarea name="name" rows="8" cols="40" placeholder="Description"></textarea>
+        </form>
+      </section>
       <section class="feed">
         <div class='feedItem'>
           <div class='feedInfoContainer'>
@@ -57,7 +69,7 @@
             <span class='feedTime'>June 25th, 2015 3:24 PM</span>
             <span class='feedLocation'>Charleston, SC</span>
           </div>
-          <span class='feedImg'><img src='http://placehold.it/50x50'></span>
+          <span class='feedImg'><img src='css/images/Alien-pic3.jpg'></span>
           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci atque recusandae, pariatur, accusantium temporibus saepe! Deserunt cumque nobis voluptatem magnam animi vero nam nemo, fugit quam. Mollitia, voluptatibus! Id, aliquid?</p>
         </div>
         <div class='feedItem'>
@@ -98,6 +110,8 @@
         </div>
       </section>
     </section>
+
+
 
     <script src="bower_components/jquery/dist/jquery.min.js" charset="utf-8"></script>
     <script src="bower_components/moment/min/moment.min.js" charset="utf-8"></script>
