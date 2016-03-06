@@ -77,10 +77,10 @@ public class Main {
                 })
         );
 
-        Spark.delete(
+        Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
-                    String deleteById =request.queryParams("deleteSighting");
+                    String deleteById = request.queryParams("id");
                     int id = Integer.valueOf(deleteById);
                     deleteSighting(conn, id);
                     return "";
