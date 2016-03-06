@@ -56,7 +56,7 @@ public class Main {
 
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    return "userName, user.id";
+                    return userName + " " + user.id;
                 })
         );
 
@@ -117,6 +117,7 @@ public class Main {
                     return "";
 
                 }
+                //only passing what is updated.
         );
         Spark.post(
                 "/logout",
