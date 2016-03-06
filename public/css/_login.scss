@@ -16,10 +16,8 @@ h4 {
 }
 
 .login {
-  display: none;
   margin: 0 auto;
   width: 40%;
-  /*background-color: white;*/
   padding: 39px;
   margin-top: 60px;
   /*box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);*/
@@ -29,14 +27,17 @@ h4 {
 .username input, .password input {
   width: 60%;
   height: 29px;
-  margin: 10px 90px;
+  margin-left: 18%;
+  margin-top: 20px;
   text-align: center;
   color: white;
   box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);
   background: rgba(255, 255, 255, 0);
-
 }
 
+.password {
+  margin-bottom: 20px;
+}
 
   .add-new, .submit  {
     width: 30%;
@@ -45,6 +46,15 @@ h4 {
     display: inline-block;
 
   }
+
+  .submit {
+    margin-left: 70px;
+  }
+
+  .add-new {
+    margin-left: 15px;
+  }
+
 
  .submit button, .add-new button {
    width: 93%;
@@ -57,14 +67,4 @@ h4 {
    font-size: 15px;
 
 
- }
-
-
- .add-new button {
-  margin-left: 105px;
-
- }
-
- .submit button {
-   margin-left: 90px;
  }

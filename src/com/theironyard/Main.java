@@ -41,17 +41,22 @@ public class Main {
                 ((request, response) ->  {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    if (userName == null) {
+                    if (userName.equals("") || userPass.equals("")) {
                         throw new Exception("Login name not found");
                     }
+
                     User user = selectUser(conn, userName);
-                    if ( user == null) {
-                        insertUser(conn, userName, userPass);
+                    if (user == null) {
+                        throw new Exception("Please create an account.");
                     }
+                    if (!user.userPass.equals(userPass)){
+                        throw new Exception("Password is incorrect!");
+                    }
+
 
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    return "";
+                    return "userName, user.id";
                 })
         );
 
@@ -60,11 +65,13 @@ public class Main {
                 ((request, response) -> {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-//                    if (user != null) {
-//                        Spark.halt(403);
-//                        System.out.println("Username already exists");
-//
-//                    }
+                    Session session = request.session();
+                    String user = session.attribute(userName);
+                    if (user != null) {
+                        Spark.halt(403);
+                        System.out.println("Username already exists");
+
+                    }
                     insertUser(conn, userName, userPass);
                     return "Success!";
                 })
@@ -73,8 +80,6 @@ public class Main {
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
-                    //ADD THIS? Session session = request.session
-                    //  String name = session.attribute("userName");
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
                     return "";
@@ -88,7 +93,14 @@ public class Main {
                     String text = request.queryParams("text");
                     String timestamp = request.queryParams("timestamp");
                     String url = request.queryParams("url");
-                    insertSighting(conn, lat, lon, text, timestamp, url);
+                    Session session = request.session();
+                    String userName = session.attribute("userName");
+                    User user = selectUser(conn, userName);
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );;
+                    if (user == null) {
+                        throw new Exception("User not logged in.");
+                    }
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );
                     return "Success!";
                 }
         );
@@ -106,14 +118,14 @@ public class Main {
                 }
         );
         Spark.post(
-                "/logout", //  Logout. I'm not sure how much of this post route we'll need to change.
+                "/logout",
                 (request, response) -> {
                     Session session = request.session();
                     session.invalidate();
                     return "";
                 }
         );
-        // We're probably going to need to write more posts, but I think this will be enough to get us started.
+
 
 
     }
@@ -151,12 +163,12 @@ public class Main {
 
     public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
         ArrayList<User> users = new ArrayList<>();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id ");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users");
         ResultSet results = stmt.executeQuery();
         while (results.next()) {
-            int id = results.getInt("user.id");
-            String userName = results.getString("user.username");
-            String userPass = results.getString("user.userpass");
+            int id = results.getInt("id");
+            String userName = results.getString("user_name");
+            String userPass = results.getString("user_password");
             User user = new User(id, userName, userPass);
             users.add(user);
 
@@ -164,31 +176,33 @@ public class Main {
         return users;
     }
 
-    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?)");
+    public static void insertSighting(Connection conn, String lat, String lon, String text, String timestamp, String url, int userId) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO sightings VALUES (NULL, ?, ?, ?, ?, ?, ?)");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
+        stmt.setInt(6, userId);
         stmt.execute();
 
         //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sighting INNER JOIN users ON" +
-                "sightings.user_id = users.id WHERE sightings.id = ?)");
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON " +
+                "sightings.user_id = users.id WHERE sightings.id = ?");
         stmt.setInt(1, id);
         ResultSet results = stmt.executeQuery();
         if (results.next()) {
-            String lat = results.getString("sighting.lat");
-            String lon = results.getString("sighting.lon");
-            String text = results.getString("text");
-            String timestamp = results.getString("timestamp");
-            String url = results.getString("url");
+            String lat = results.getString("sightings.lat");
+            String lon = results.getString("sightings.lon");
+            String text = results.getString("sightings.text");
+            String timestamp = results.getString("sightings.timestamp");
+            String url = results.getString("sightings.url");
+            String userName = results.getString("users.user_name");
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
-            return new Sighting(id, lat, lon, text, timestamp, url);
+            return new Sighting(id, lat, lon, text, timestamp, url,userName);
 
 
             // I think? This whole thing could be entirely broken. Let me know what you think.
@@ -207,8 +221,8 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            String name = results.getString("users.name");
-            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
+            String name = results.getString("users.user_name");
+            Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url, name);
             sightings.add(sighting);
         }
         return sightings;
@@ -229,12 +243,4 @@ public class Main {
         stmt.setString(5, url);
 
     }
-
-    }
-    //  Our naming conventions for posts.
-    //  "/create-"
-    //  "/read-"
-    //  "/update-"
-    //  "/delete-"
-    //
-
+}
