@@ -1,6 +1,5 @@
 package com.theironyard;
 
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import jodd.json.JsonSerializer;
 import spark.Session;
 import spark.Spark;
@@ -20,7 +19,9 @@ public class Main {
                 "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
+
                     ArrayList<Sighting> allSightings = selectSightings(conn);
+
                     return serializer.serialize(allSightings);
 
                 })
@@ -40,7 +41,7 @@ public class Main {
                 ((request, response) ->  {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    if (userName == null || userPass == null) {
+                    if (userName == null) {
                         throw new Exception("Login name not found");
                     }
                     User user = selectUser(conn, userName);
@@ -93,6 +94,10 @@ public class Main {
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
                     insertSighting(conn, lat, lon, text, timestamp, url, user.id );;
+                    if (user == null) {
+                        throw new Exception("User not logged in.");
+                    }
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );
                     return "Success!";
                 }
         );
@@ -117,6 +122,7 @@ public class Main {
                     return "";
                 }
         );
+
 
 
     }
@@ -148,6 +154,8 @@ public class Main {
             return new User(id, userName, password);
         }
         return null;
+
+        // I think this method will work for what we need. AGREED
     }
 
     public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
@@ -175,6 +183,7 @@ public class Main {
         stmt.setInt(6, userId);
         stmt.execute();
 
+        //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
@@ -191,6 +200,8 @@ public class Main {
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
+
+            // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
     }
