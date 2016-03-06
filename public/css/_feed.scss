@@ -23,6 +23,9 @@
   font-weight: bold;
   font-family:monospace;
   font-size: 18px;
+  &:focus{
+    outline: none;
+  }
 
 }
 .feed {
