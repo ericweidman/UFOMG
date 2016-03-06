@@ -73,8 +73,6 @@ public class Main {
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
-                    //ADD THIS? Session session = request.session
-                    //  String name = session.attribute("userName");
                     int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
                     return "";
