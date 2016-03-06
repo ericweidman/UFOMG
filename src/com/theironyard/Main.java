@@ -45,6 +45,7 @@ public class Main {
                         throw new Exception("Login name not found");
                     }
                     User user = selectUser(conn, userName);
+
                     if (user.userPass != userPass){
                         Spark.halt(403);
                         System.out.println("Password is incorrect!");
