@@ -56,7 +56,7 @@ public class Main {
 
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    return user.id;
+                    return user.id + user.userName;
                 })
         );
 
