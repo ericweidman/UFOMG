@@ -234,8 +234,8 @@ public class Main {
         stmt.execute();
     }
 
-    static void updateSighting(Connection conn,  String lat, String lon, String text, String timestamp, String url, int id) throws SQLException {
-        PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?)");
+    static void updateSighting(Connection conn, String lat, String lon, String text, String timestamp, String url, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("UPDATE sighting SET lat = ?, lon = ?, text = ?, timestamp = ?, url = ? WHERE id = ?");
         stmt.setString(1, lat);
         stmt.setString(2, lon);
         stmt.setString(3, text);
