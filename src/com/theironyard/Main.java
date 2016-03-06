@@ -65,8 +65,6 @@ public class Main {
         Spark.post(
                 "/update-sighting",
                 (request, response) -> {
-
-                    //being passed object, with id, and all the new stuff.
                     String lat = request.queryParams("lat");
                     String lon = request.queryParams("lon");
                     String text = request.queryParams("text");
@@ -74,7 +72,6 @@ public class Main {
                     String url = request.queryParams("url");
                     updateSighting(conn, lat, lon, text, timestamp, url);
                     return "";
-                    //if sucesss return , else error.
 
                 }
         );
