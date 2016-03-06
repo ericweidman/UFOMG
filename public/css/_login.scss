@@ -1,26 +1,28 @@
 
 h1 {
-  color:#BA345C;
+  color:white;
 text-align: center;
-font-family: 'Six Caps', sans-serif;
-font-size: 50px;
+font-family: 'Quantico', sans-serif;
+font-size: 100px;
 letter-spacing: 5px;
-
+margin-bottom: 5px;
 }
 
 h4 {
-  color: #BA345C;
+  color: white;
   text-align: center;
+  font-size: 27px;
+  font-weight: lighter;
 }
 
 .login {
 
   margin: 0 auto;
   width: 40%;
-  background-color: #a391a2;
+  /*background-color: white;*/
   padding: 39px;
   margin-top: 60px;
-  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);
+  /*box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);*/
 }
 
 
@@ -29,12 +31,29 @@ h4 {
   height: 29px;
   margin: 10px 90px;
   text-align: center;
+  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);
+
 
 
 
  }
 
- .submit button, .add-new button {
-   width: 30%;
+
+  .add-new, .submit  {
+    width: 30%;
+    margin: 0;
+
+  }
+
+ .submit button {
+   width: 90%;
    display: inline-block;
+   margin-left: 90px;
+
  }
+
+
+ /*.add-new button {
+   width:90%;
+   display: inline-block;
+ }*/

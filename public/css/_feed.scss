@@ -1,0 +1,14 @@
+.feed {
+
+  .feedItem {
+    height: 250px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  .feedItem:nth-child(odd) {
+    background-image: url('/css/images/StarryNight2.jpg');
+  }
+  .feedItem:nth-child(even) {
+    background-image: url('/css/images/StarryNight2.jpg');
+  }
+}

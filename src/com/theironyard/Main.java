@@ -19,35 +19,74 @@ public class Main {
                 "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
-                    ArrayList<Sighting> allSightings = selectSightings(conn);
-                    return serializer.serialize(allSightings);
-                    //this needs an is else statement, if empty string is passed pass everything
-                    //else if id number is passed, pass that sighting back.
 
+                    ArrayList<Sighting> allSightings = selectSightings(conn);
+
+                    return serializer.serialize(allSightings);
+
+                })
+        );
+
+        Spark.get(
+                "/allUsers",
+                ((request1, response1) -> {
+                    JsonSerializer serializer = new JsonSerializer();
+                    ArrayList<User> allUsers = selectUsers(conn);
+                    return serializer.serialize(allUsers);
+                })
+        );
+
+        Spark.post(
+                "/login",
+                ((request, response) ->  {
+                    String userName = request.queryParams("userName");
+                    String userPass = request.queryParams("userPass");
+                    if (userName == null) {
+                        throw new Exception("Login name not found");
+                    }
+                    User user = selectUser(conn, userName);
+                    if ( user == null) {
+                        insertUser(conn, userName, userPass);
+                    }
+
+                    Session session = request.session();
+                    session.attribute("userName", userName);
+                    return "";
                 })
         );
 
         Spark.post(
                 "/create-user",
                 (request, response) -> {
-                    // being passed json object with username, password
-                    //needs to be parsed, if it exists send error.
-                    String userName = request.queryParams("userName"); //We need to figure out these call names as a group.
+                    String userName = request.queryParams("userName"); .
                     String userPass = request.queryParams("userPass");
+                    User user = selectUser(conn, userName);
+                    if (user != null) {
+                        Spark.halt(403);
+                        System.out.println("Username already exists");
+
+                    }
+
                     insertUser(conn, userName, userPass);
-                    return userName;
-                    //if empty request is sent return all users.
-                    //if json object with username/password is received
-                    //check exists, error
+                    Session session = request.session();
+                    session.attribute("userName", userName);
+
+                    JsonSerializer serializer = new JsonSerializer();
+                    return serializer.serialize(user);
+
+
+                    //check if username already exists if does send error, if not add and send success
 
                 }
         );
         Spark.post(
                 "/delete-sighting",
                 (request, response) -> {
-                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));)
+                    //ADD THIS? Session session = request.session
+                    //  String name = session.attribute("userName");
+                    int deleteById = Integer.valueOf(request.queryParams("deleteSighting"));
                     deleteSighting(conn, deleteById);
-                    return "Success!";
+                    return "";
                 }
         );
         Spark.post(
@@ -91,9 +130,11 @@ public class Main {
     public static void createTables(Connection conn) throws SQLException {
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, user_name VARCHAR, user_password VARCHAR)");
+        // Some of this may change.
         stmt.execute("CREATE TABLE IF NOT EXISTS sightings (id IDENTITY, lat VARCHAR, lon VARCHAR, text VARCHAR, timestamp VARCHAR," + //WHY IS THERE A + HERE?
                 "url VARCHAR, user_id INT)");
-
+        // We may need to add additional information here
+        // so that we can INNER JOIN them. I need some clarification on this. NOTHING ELSE NEEDED HERE
     }
 
     public static void insertUser(Connection conn, String userName, String userPass) throws SQLException {
@@ -101,8 +142,8 @@ public class Main {
         stmt.setString(1, userName);
         stmt.setString(2, userPass);
         stmt.execute();
+        // This should cover it. Maybe? YEP
     }
-
 
     public static User selectUser(Connection conn, String userName) throws SQLException {
         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE user_name = ?");
@@ -114,6 +155,8 @@ public class Main {
             return new User(id, userName, password);
         }
         return null;
+
+        // I think this method will work for what we need. AGREED
     }
 
     public static ArrayList<User> selectUsers(Connection conn) throws SQLException {
@@ -139,7 +182,8 @@ public class Main {
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
         stmt.execute();
-.
+
+        //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
@@ -156,6 +200,8 @@ public class Main {
             //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
+
+            // I think? This whole thing could be entirely broken. Let me know what you think.
         }
         return null;
     }
@@ -191,7 +237,14 @@ public class Main {
         stmt.setString(3, text);
         stmt.setString(4, timestamp);
         stmt.setString(5, url);
+
     }
 
-}
+    }
+    //  Our naming conventions for posts.
+    //  "/create-"
+    //  "/read-"
+    //  "/update-"
+    //  "/delete-"
+    //
 

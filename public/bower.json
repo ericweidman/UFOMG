@@ -1,25 +1,25 @@
 {
-name: "resources",
-homepage: "https://github.com/bhare1987/UFOMG",
-authors: [
-"bhare1987 <brandonlhare@gmail.com>"
-],
-description: "",
-main: "",
-moduleType: [ ],
-license: "MIT",
-ignore: [
-"**/.*",
-"node_modules",
-"bower_components",
-"test",
-"tests"
-],
-dependencies: {
-underscore: "^1.8.3",
-jquery: "^2.2.1",
-font-awesome: "fontawesome#^4.5.0",
-parallax: "^2.1.3",
-moment: "^2.11.2"
-}
+  "name": "public",
+  "homepage": "https://github.com/bhare1987/UFOMG",
+  "authors": [
+    "bhare1987 <brandonlhare@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "^1.8.3",
+    "jquery": "^2.2.1",
+    "font-awesome": "fontawesome#^4.5.0",
+    "moment": "^2.11.2",
+    "jquery.stellar": "^0.6.2"
+  }
 }
