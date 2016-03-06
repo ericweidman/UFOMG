@@ -73,10 +73,10 @@ h4 {
   margin: 0 auto; }
   .feed .feedItem {
     height: 250px;
-    margin-top: 50px;
+    margin-top: 100px;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    box-shadow: 0px 0px 50px 50px rgba(143, 156, 193, 0.4);
+    box-shadow: 0px 0px 30px 20px rgba(143, 156, 193, 0.4);
     padding: 2%; }
 
 .feedUser, .feedTime, .feedLocation {
