@@ -41,9 +41,10 @@ public class Main {
                 ((request, response) ->  {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    if (userName == null || userPass == null) {
+                    if (userName.equals("") || userPass.equals("")) {
                         throw new Exception("Login name not found");
                     }
+
                     User user = selectUser(conn, userName);
                     if (user == null) {
                         throw new Exception("Please create an account.");
@@ -51,6 +52,8 @@ public class Main {
                     if (!user.userPass.equals(userPass)){
                         throw new Exception("Password is incorrect!");
                     }
+
+
                     Session session = request.session();
                     session.attribute("userName", userName);
                     return user.id;
@@ -168,6 +171,7 @@ public class Main {
             String userPass = results.getString("user_password");
             User user = new User(id, userName, userPass);
             users.add(user);
+
         }
         return users;
     }
