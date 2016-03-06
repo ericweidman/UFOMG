@@ -19,9 +19,7 @@ public class Main {
                 "/allSightings",
                 ((request, response) -> {
                     JsonSerializer serializer = new JsonSerializer();
-
                     ArrayList<Sighting> allSightings = selectSightings(conn);
-
                     return serializer.serialize(allSightings);
 
                 })
@@ -186,7 +184,6 @@ public class Main {
         stmt.setInt(6, userId);
         stmt.execute();
 
-        //I think this is good too.
     }
 
     public static Sighting selectSighting(Connection conn, int id) throws SQLException {
@@ -200,7 +197,6 @@ public class Main {
             String text = results.getString("sightings.text");
             String timestamp = results.getString("sightings.timestamp");
             String url = results.getString("sightings.url");
-            //int userId = results.getInt("user_id"); I THINK USERS.USERNAME
             return new Sighting(id, lat, lon, text, timestamp, url);
 
 
@@ -211,7 +207,7 @@ public class Main {
 
     public static ArrayList<Sighting> selectSightings(Connection conn) throws SQLException {
         ArrayList<Sighting> sightings = new ArrayList<>();
-        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id"); //DONT NEED INNER JOIN
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sightings INNER JOIN users ON sightings.user_id = users.id");
         ResultSet results = stmt.executeQuery();
         while (results.next()) {
             int id = results.getInt("sightings.id");
@@ -220,7 +216,6 @@ public class Main {
             String text = results.getString("text");
             String timestamp = results.getString("timestamp");
             String url = results.getString("url");
-            String name = results.getString("users.name");
             Sighting sighting = new Sighting(id, lat, lon, text, timestamp, url);
             sightings.add(sighting);
         }
