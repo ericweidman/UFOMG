@@ -58,7 +58,7 @@ public class Main {
         Spark.post(
                 "/create-user",
                 (request, response) -> {
-                    String userName = request.queryParams("userName"); .
+                    String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
                     User user = selectUser(conn, userName);
                     if (user != null) {
