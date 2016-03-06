@@ -41,7 +41,7 @@ public class Main {
                 ((request, response) ->  {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    if (userName == null) {
+                    if (userName == null || userPass == null) {
                         throw new Exception("Login name not found");
                     }
                     User user = selectUser(conn, userName);
@@ -53,7 +53,7 @@ public class Main {
                     }
                     Session session = request.session();
                     session.attribute("userName", userName);
-                    return "";
+                    return user.id;
                 })
         );
 
