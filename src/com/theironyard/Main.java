@@ -1,5 +1,6 @@
 package com.theironyard;
 
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import jodd.json.JsonSerializer;
 import spark.Session;
 import spark.Spark;
@@ -39,13 +40,15 @@ public class Main {
                 ((request, response) ->  {
                     String userName = request.queryParams("userName");
                     String userPass = request.queryParams("userPass");
-                    if (userName == null) {
+                    if (userName == null || userPass == null) {
                         throw new Exception("Login name not found");
                     }
                     User user = selectUser(conn, userName);
-                    if ( user == null) {
-                        insertUser(conn, userName, userPass);
+                    if (user.userPass != userPass){
+                        Spark.halt(403);
+                        System.out.println("Password is incorrect!");
                     }
+
 
                     Session session = request.session();
                     session.attribute("userName", userName);
@@ -226,4 +229,3 @@ public class Main {
 
     }
 }
-
