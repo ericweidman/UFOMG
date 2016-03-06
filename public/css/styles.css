@@ -39,28 +39,39 @@ h4 {
   height: 29px;
   margin: 10px 90px;
   text-align: center;
-  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6); }
+  color: white;
+  box-shadow: 0px 0px 10px 1px rgba(145, 145, 145, 0.6);
+  background: rgba(255, 255, 255, 0); }
 
 .add-new, .submit {
   width: 30%;
-  margin: 0; }
+  margin-right: 0;
+  margin-top: 10px;
+  display: inline-block; }
+
+.submit button, .add-new button {
+  width: 93%;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0);
+  border-color: #529EEB;
+  color: #C2CAD1;
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 15px; }
+
+.add-new button {
+  margin-left: 105px; }
 
 .submit button {
-  width: 90%;
-  display: inline-block;
   margin-left: 90px; }
 
-/*.add-new button {
-   width:90%;
-   display: inline-block;
- }*/
-.feed .feedItem {
-  height: 250px;
-  background-repeat: no-repeat;
-  background-attachment: fixed; }
-
-.feed .feedItem:nth-child(odd) {
-  background-image: url("/css/images/StarryNight2.jpg"); }
-
-.feed .feedItem:nth-child(even) {
-  background-image: url("/css/images/StarryNight2.jpg"); }
+.feed {
+  display: none; }
+  .feed .feedItem {
+    height: 250px;
+    background-repeat: no-repeat;
+    background-attachment: fixed; }
+  .feed .feedItem:nth-child(odd) {
+    background-image: url("/css/images/StarryNight2.jpg"); }
+  .feed .feedItem:nth-child(even) {
+    background-image: url("/css/images/StarryNight2.jpg"); }
