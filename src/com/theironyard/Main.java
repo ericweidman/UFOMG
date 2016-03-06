@@ -44,11 +44,13 @@ public class Main {
                     if (userName == null) {
                         throw new Exception("Login name not found");
                     }
-                    User user = selectUser(conn, userName);
 
+                    User user = selectUser(conn, userName);
+                    if (user == null) {
+                        throw new Exception("Please create an account.");
+                    }
                     if (user.userPass != userPass){
-                        Spark.halt(403);
-                        System.out.println("Password is incorrect!");
+                        throw new Exception("Password is incorrect!");
                     }
 
 
