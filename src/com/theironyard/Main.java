@@ -48,7 +48,7 @@ public class Main {
                     }
 
                     Session session = request.session();
-                    session.attribute("userName", userName); //setting username in session
+                    session.attribute("userName", userName);
                     return "";
                 })
         );
@@ -89,7 +89,7 @@ public class Main {
                     Session session = request.session();
                     String userName = session.attribute("userName");
                     User user = selectUser(conn, userName);
-                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );
+                    insertSighting(conn, lat, lon, text, timestamp, url, user.id );;
                     return "Success!";
                 }
         );
@@ -225,5 +225,5 @@ public class Main {
         stmt.setString(5, url);
 
     }
-    }
+}
 
